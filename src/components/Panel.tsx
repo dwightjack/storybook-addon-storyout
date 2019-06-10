@@ -22,7 +22,7 @@ export function Panel({
   api,
   active,
 }): React.FunctionComponentElement<PanelProp> {
-  const data = api.getCurrentStoryData() || {};
+  const { parameters = {} } = api.getCurrentStoryData() || {};
 
   const [code, setCode] = useState('');
 
@@ -40,13 +40,13 @@ export function Panel({
     return () => {
       api.off(UPDATE_SOURCE, onSource);
     };
-  }, [data.parameters]);
+  }, [parameters.source]);
 
   if (!active) {
     return null;
   }
 
-  if (!code || data.parameters === false) {
+  if (!code || !parameters.source) {
     return <Placeholder>HTML output not available</Placeholder>;
   }
 
