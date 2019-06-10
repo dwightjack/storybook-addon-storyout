@@ -1,0 +1,7 @@
+{
+  "compilerOptions": {
+    "jsx": "react",
+    "esModuleInterop": true
+  },
+  "include": ["./src/**/*", "dist/register.js"]
+}
