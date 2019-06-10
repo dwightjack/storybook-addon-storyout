@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { useState, useEffect } from 'react';
 import { Placeholder, SyntaxHighlighter } from '@storybook/components';
-import { styled } from '@storybook/theming';
+import { ClassNames } from '@storybook/theming';
 import { UPDATE_SOURCE } from '../constants';
 import { html as formatHTML } from 'js-beautify';
 
@@ -9,14 +9,6 @@ export interface PanelProp {
   api: any;
   active: boolean;
 }
-
-const Wrapper = styled.div`
-  font-size: 0.75rem;
-
-  pre * {
-    font-family: Consolas, Monaco, monospace !important;
-  }
-`;
 
 export function Panel({
   api,
@@ -51,10 +43,23 @@ export function Panel({
   }
 
   return (
-    <Wrapper>
-      <SyntaxHighlighter language={'html'} bordered copyable>
-        {code}
-      </SyntaxHighlighter>
-    </Wrapper>
+    <ClassNames>
+      {({ css }) => (
+        <SyntaxHighlighter
+          language={'html'}
+          bordered
+          copyable
+          className={css`
+            font-size: 0.75rem;
+
+            pre * {
+              font-family: Consolas, Monaco, monospace !important;
+            }
+          `}
+        >
+          {code}
+        </SyntaxHighlighter>
+      )}
+    </ClassNames>
   );
 }
