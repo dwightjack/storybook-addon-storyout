@@ -1,6 +1,6 @@
 {
   "name": "storybook-addon-storyout",
-  "version": "1.0.0-beta.3",
+  "version": "1.0.0-beta.4",
   "author": "Marco Solazzi",
   "license": "MIT",
   "main": "index.js",
