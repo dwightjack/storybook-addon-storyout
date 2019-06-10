@@ -27,18 +27,18 @@ export function Panel({
   const [code, setCode] = useState('');
 
   useEffect(() => {
-    function onSource({ code: codeIn }): void {
-      if (!codeIn) {
+    function onUpdate({ output }): void {
+      if (!output) {
         setCode('');
         return;
       }
       // eslint-disable-next-line @typescript-eslint/camelcase
-      setCode(formatHTML(codeIn, { indent_size: 2, unformatted: [] }));
+      setCode(formatHTML(output, { indent_size: 2, unformatted: [] }));
     }
 
-    api.on(UPDATE_SOURCE, onSource);
+    api.on(UPDATE_SOURCE, onUpdate);
     return () => {
-      api.off(UPDATE_SOURCE, onSource);
+      api.off(UPDATE_SOURCE, onUpdate);
     };
   }, [parameters.source]);
 
