@@ -17,11 +17,13 @@ export const withSource = makeDecorator({
     context: StoryContext,
     { parameters = {} }: DecoratorParams,
   ) {
+    const output = getStory(context);
+
     if (parameters === false) {
-      return getStory(context);
+      return output;
     }
 
-    const { transform, match, render } = parameters;
+    const { render, language = 'html' } = parameters;
 
     if (typeof render !== 'function') {
       throw new TypeError('You need to provide a render function');
@@ -29,18 +31,12 @@ export const withSource = makeDecorator({
 
     const channel = addons.getChannel();
 
-    const result = render(getStory(context));
-    let output = result;
+    const source = render(output, parameters);
 
-    if (typeof match === 'string' && !output.matches(match)) {
-      output = output.querySelector(match);
-    }
-
-    if (typeof transform === 'function') {
-      output = transform(output);
-    }
-
-    channel.emit(UPDATE_SOURCE, { output: output.outerHTML });
+    channel.emit(UPDATE_SOURCE, {
+      source,
+      language,
+    });
 
     return output;
   },

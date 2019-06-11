@@ -3,7 +3,7 @@ import { useState, useEffect } from 'react';
 import { Placeholder, SyntaxHighlighter } from '@storybook/components';
 import { ClassNames } from '@storybook/theming';
 import { UPDATE_SOURCE } from '../constants';
-import { html as formatHTML } from 'js-beautify';
+import { format } from '../utils';
 
 export interface PanelProp {
   api: any;
@@ -17,15 +17,16 @@ export function Panel({
   const { parameters = {} } = api.getCurrentStoryData() || {};
 
   const [code, setCode] = useState('');
+  const [language, setLanguage] = useState('');
 
   useEffect(() => {
-    function onUpdate({ output }): void {
-      if (!output) {
+    function onUpdate({ source, language }): void {
+      setLanguage(language);
+      if (!source) {
         setCode('');
         return;
       }
-      // eslint-disable-next-line @typescript-eslint/camelcase
-      setCode(formatHTML(output, { indent_size: 2, unformatted: [] }));
+      setCode(format(source));
     }
 
     api.on(UPDATE_SOURCE, onUpdate);
@@ -39,14 +40,14 @@ export function Panel({
   }
 
   if (!code || !parameters.source) {
-    return <Placeholder>HTML output not available</Placeholder>;
+    return <Placeholder>Output not available</Placeholder>;
   }
 
   return (
     <ClassNames>
       {({ css }) => (
         <SyntaxHighlighter
-          language={'html'}
+          language={language}
           bordered
           copyable
           className={css`

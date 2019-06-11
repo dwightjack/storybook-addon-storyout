@@ -1,10 +1,6 @@
-# Deprecated!
+# Storybook Addon StoryOut
 
-Please use https://github.com/tonai/storybook-addon-themes.
-
-# Storybook Addon Preview Theme
-
-Storybook Addon Preview Theme can be used to apply a global theme (i.e. a CSS class) to the preview panel in [Storybook](https://storybook.js.org).
+Storybook Addon StoryOut adds a tab panel that lets you visualize and copy the output of a story.
 
 This addon supports every framework supported by Storybook that renders in a HTML document.
 
