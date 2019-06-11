@@ -23,7 +23,7 @@ export const withSource = makeDecorator({
       return output;
     }
 
-    const { render, language = 'html', stringify, transform } = parameters;
+    const { render, ...rest } = parameters;
 
     if (typeof render !== 'function') {
       throw new TypeError('You need to provide a render function');
@@ -31,11 +31,11 @@ export const withSource = makeDecorator({
 
     const channel = addons.getChannel();
 
-    const source = render(output, { stringify, transform, language });
+    const source = render(output, rest);
 
     channel.emit(UPDATE_SOURCE, {
       source,
-      language,
+      language: parameters.language || 'html',
     });
 
     return output;
