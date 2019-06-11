@@ -2,12 +2,12 @@
 
 Storybook Addon StoryOut adds a tab panel that lets you visualize and copy the output of a story.
 
-This addon supports every framework supported by Storybook that renders in a HTML document.
+This addon con be configured to be used in every framework supported by Storybook.
 
 ## Installation
 
 ```sh
-npm i -D storybook-addons-preview-theme
+npm i -D storybook-addon-storyout
 ```
 
 ## Configuration
@@ -17,119 +17,106 @@ Edit or create a file called `addons.js` in the Storybook config directory (by d
 Add following content to it:
 
 ```js
-import 'storybook-addons-preview-theme/register';
+import 'storybook-addon-storyout/register';
 ```
 
 ## Usage
 
+### With `@storybook/html`
+
 Write your stories like this:
 
 ```js
-import React from 'react';
 import { storiesOf } from '@storybook/react';
-import { withTheme } from 'storybook-addons-preview-theme';
+import { withSource, html } from 'storybook-addon-storyout';
+
+const render = html(); // <-- initialize the html renderer
 
 storiesOf('Button', module)
   .addDecorator(withTheme)
   .addParameters({
-    themes: [
-      {
-        name: 'dark',
-        label: 'Dark',
-        className: 'theme-dark',
-      },
-      {
-        name: 'light',
-        label: 'Light',
-        className: 'theme-light',
-      },
-    ],
+    source: { render },
   })
-  .add('with text', () => <button>Click me</button>);
+  .add('default button', () => '<button>Click me</button>');
 ```
 
-This will show a new panel tab with a dropdown where users can select either the `Dark` or `Light` theme (or none by default).
+This will show a new panel tab with the highlighted HTML output.
 
-**Note: Remember to always apply the `withTheme` decorator whenever you want to show a list of themes!**
+### With another framework
 
-### Setting up global themes
+With frameworks like React or Vue.js you can leverage the custom renderer and provide a custom render function returning an HTML string.
 
-If your themes are defined globally to the project it could be easier to setup the addon once and just activate the tab whenever you need it.
-
-To achieve that, add the themes to all stories with `addParameters` in `.storybook/config.js`:
+For example, with React write your stories like this:
 
 ```js
-import { addParameters } from '@storybook/react'; // <- or your storybook framework
+import React from 'react';
+import ReactDOMServer from 'react-dom/server';
+import { storiesOf } from '@storybook/react';
+import { withSource, custom } from 'storybook-addon-storyout';
+
+const outputRender = custom({
+  stringify: (node) => ReactDOMServer.renderToStaticMarkup(node),
+});
+
+storiesOf('Button', module)
+  .addDecorator(withTheme)
+  .addParameters({
+    source: { render: outputRender },
+  })
+  .add('with text', () => <button>Click me</button>);
+```
+
+### Global configuration
+
+If your want to show the source panel on every story you can cofigure it globally in `.storybook/config.js`:
+
+```js
+import { addParameters, addDecorator } from '@storybook/html'; // <- or your storybook framework
+import { withSource, html } from 'storybook-addon-storyout';
 
 addParameters({
-  globalThemes: [
-    {
-      name: 'dark',
-      label: 'Dark',
-      className: 'theme-dark',
-    },
-    {
-      name: 'light',
-      label: 'Light',
-      className: 'theme-light',
-    },
-  ],
+  source: {
+    render: html(),
+  },
 });
+addDecorator(withSource);
 ```
 
-and then set the `themes` parameter on individual stories:
+To disable the source panel in a specific story set its `source` parameter to `false`.
 
-```diff
-storiesOf('Button', module)
-  .addDecorator(withTheme)
-  .addParameters({
--    themes: [
--      {
--        name: 'dark',
--        label: 'Dark',
--        className: 'theme-dark',
--      },
--      {
--        name: 'light',
--        label: 'Light',
--        className: 'theme-light',
--      },
--    ],
-+   themes: true,
-  })
-  .add('with text', () => <button>Click me</button>);
+```js
+storiesOf('Button', module).add(
+  'without source',
+  () => '<button>Click me</button>',
+  { source: false },
+);
 ```
 
-`themes` can be either `true` or an array of string containing a list of theme names you want to show in the panel:
+### `source` Parameter configuration
 
-```diff
-storiesOf('Button', module)
-  .addDecorator(withTheme)
-  .addParameters({
--   themes: true,
-+   themes: ['dark'], <-- User can just select the Dark theme
-  })
-  .add('with text', () => <button>Click me</button>);
-```
+The `source` parameter accepts the following properties:
 
-Of course you can mix theme names and custom theme configuration objects for maximum flexibility:
+#### `language: string` (optional)
 
-```diff
-storiesOf('Button', module)
-  .addDecorator(withTheme)
-  .addParameters({
--   themes: ['dark'],
-+   themes: [
-+     'dark', <-- theme defined in globalThemes
-+     {
-+       name: 'pink', <-- custom theme for this story
-+       label: 'Pink',
-+       className: 'theme-pink',
-+     },
-+   ],
-  })
-  .add('with text', () => <button>Click me</button>);
-```
+The highlight language in use. Defaults to `html`.
+
+#### `render(story: any, parameters: object): string`
+
+A function receiving the story output and a parameters object. Parameter object contains the `transform` and `stringify` functions and the `language` string.
+
+#### `stringify(node: any): string` (optional)
+
+A function receiving the story output (in `@storybook/html` it might be a string or a DOM element) and returning its source as string.
+
+**Note**: This function is already defined in the `html` renderer but can be overridden if needed.
+
+#### `transform(node: any): any` (optional)
+
+A function receiving the story output and returning it after an arbitrary transformation.
+
+### Default configuration
+
+Both the `custom` and the `hmtl` renderer accept the same `source` parameters. Passed-in values will be used as defaults.
 
 ## Contributing
 
