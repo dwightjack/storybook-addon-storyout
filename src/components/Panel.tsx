@@ -3,7 +3,7 @@ import { useState, useEffect } from 'react';
 import { Placeholder, SyntaxHighlighter } from '@storybook/components';
 import { API } from '@storybook/api';
 import { ClassNames } from '@storybook/theming';
-import { UPDATE_SOURCE } from '../constants';
+import { UPDATE_SOURCE, PARAM_KEY } from '../constants';
 import { format } from '../utils';
 import { SourceUpdateEvent } from '../types';
 
@@ -18,6 +18,10 @@ export function Panel({
 }: PanelProp): React.FunctionComponentElement<PanelProp> | null {
   const data = api.getCurrentStoryData();
   let parameters: Record<string, unknown> = {};
+
+  if (!data) {
+    return null;
+  }
 
   if ('parameters' in data) {
     parameters = data.parameters;
@@ -40,13 +44,13 @@ export function Panel({
     return (): void => {
       api.off(UPDATE_SOURCE, onUpdate);
     };
-  }, [parameters.source]);
+  }, [parameters[PARAM_KEY]]);
 
   if (!active) {
     return null;
   }
 
-  if (!code || !parameters.source) {
+  if (!code || !parameters[PARAM_KEY]) {
     return <Placeholder>Output not available</Placeholder>;
   }
 

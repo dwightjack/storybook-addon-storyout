@@ -20,9 +20,11 @@
     "lint": "run-s lint:*",
     "test": "jest",
     "release": "run-s lint test build",
+    "demo": "start-storybook -c example/.storybook",
     "prepublishOnly": "run-s release"
   },
   "dependencies": {
+
     "@storybook/addons": "^5.3.3",
     "@storybook/components": "^5.3.3",
     "@storybook/theming": "^5.3.3",
@@ -31,11 +33,14 @@
     "react-dom": "^16.12.0"
   },
   "devDependencies": {
+    "@babel/core": "^7.8.3",
+    "@storybook/html": "^5.3.3",
     "@types/jest": "^24.0.25",
     "@types/js-beautify": "^1.8.1",
     "@types/react": "^16.9.17",
     "@typescript-eslint/eslint-plugin": "^2.16.0",
     "@typescript-eslint/parser": "^2.16.0",
+    "babel-loader": "^8.0.6",
     "del": "^5.1.0",
     "eslint": "^6.8.0",
     "eslint-config-prettier": "^6.9.0",

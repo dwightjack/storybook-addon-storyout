@@ -6,7 +6,7 @@ import addons, {
   WrapperSettings,
 } from '@storybook/addons';
 
-import { UPDATE_SOURCE } from './constants';
+import { UPDATE_SOURCE, PARAM_KEY } from './constants';
 
 export function decoratorWrapper(
   getStory: StoryGetter,
@@ -17,7 +17,7 @@ export function decoratorWrapper(
 
   if ((parameters as unknown) === false) {
     console.warn(
-      `Setting the "source" parameter to false is deprecated. Use { render: false } instead.`,
+      `Setting the "${PARAM_KEY}" parameter to false is deprecated. Use { render: false } instead.`,
     );
     return output;
   }
@@ -46,7 +46,7 @@ export function decoratorWrapper(
 
 export const withSource = makeDecorator({
   name: 'withSource',
-  parameterName: 'source',
+  parameterName: PARAM_KEY,
   skipIfNoParametersOrOptions: false,
   wrapper: decoratorWrapper,
 });
