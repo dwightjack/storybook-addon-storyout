@@ -55,3 +55,4 @@ Icon
 
 dist
 .cache
+!.vscode

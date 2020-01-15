@@ -12,6 +12,20 @@ npm i -D storybook-addon-storyout
 
 ## Configuration
 
+### Storybook 5.3 and newer
+
+1. Edit or create a file called `main.js` in the Storybook config directory (by default, it’s `.storybook`).
+2. Add the addon to the `addons` array:
+
+```js
+module.exports = {
+  // ...other configs here
+  addons: ['storybook-addon-storyout/register'],
+};
+```
+
+### Storybook <=5.2
+
 Edit or create a file called `addons.js` in the Storybook config directory (by default, it’s `.storybook`).
 
 Add following content to it:
@@ -24,7 +38,25 @@ import 'storybook-addon-storyout/register';
 
 ### With `@storybook/html`
 
-Write your stories like this:
+Write your stories like this (uses [CSF](https://storybook.js.org/docs/formats/component-story-format/)):
+
+```js
+import { withSource, html } from 'storybook-addon-storyout';
+
+const render = html(); // <-- initialize the html renderer
+
+export default {
+  title: 'Button',
+  decorators: [withSource],
+  parameters: {
+    source: { render },
+  },
+};
+
+export const DefaultButton = () => '<button>Click me</button>';
+```
+
+Or, with the [storiesOf API](https://storybook.js.org/docs/formats/storiesof-api/):
 
 ```js
 import { storiesOf } from '@storybook/react';
@@ -33,7 +65,7 @@ import { withSource, html } from 'storybook-addon-storyout';
 const render = html(); // <-- initialize the html renderer
 
 storiesOf('Button', module)
-  .addDecorator(withTheme)
+  .addDecorator(withSource)
   .addParameters({
     source: { render },
   })
@@ -51,24 +83,26 @@ For example, with React write your stories like this:
 ```js
 import React from 'react';
 import ReactDOMServer from 'react-dom/server';
-import { storiesOf } from '@storybook/react';
 import { withSource, custom } from 'storybook-addon-storyout';
 
-const outputRender = custom({
+const render = custom({
   stringify: (node) => ReactDOMServer.renderToStaticMarkup(node),
 });
 
-storiesOf('Button', module)
-  .addDecorator(withTheme)
-  .addParameters({
-    source: { render: outputRender },
-  })
-  .add('with text', () => <button>Click me</button>);
+export default {
+  title: 'Button',
+  decorators: [withSource],
+  parameters: {
+    source: { render },
+  },
+};
+
+export const WithText = () => <button>Click me</button>;
 ```
 
 ### Global configuration
 
-If your want to show the source panel on every story you can cofigure it globally in `.storybook/config.js`:
+If your want to show the source panel on every story you can configure it globally in `.storybook/preview.js` (`.storybook/config.js` for Storybook <= 5.2):
 
 ```js
 import { addParameters, addDecorator } from '@storybook/html'; // <- or your storybook framework
@@ -82,41 +116,42 @@ addParameters({
 addDecorator(withSource);
 ```
 
-To disable the source panel in a specific story set its `source` parameter to `false`.
+To disable the source panel in a specific story set its `source.render` parameter to `false`.
 
 ```js
-storiesOf('Button', module).add(
-  'without source',
-  () => '<button>Click me</button>',
-  { source: false },
-);
+export const WithoutSource = () => '<button>Click me</button>';
+
+WithSource.story = {
+  parameters: { source: { render: false } },
+};
 ```
 
 ### `source` Parameter configuration
 
 The `source` parameter accepts the following properties:
 
-#### `language: string` (optional)
+| name      | type     | default  | description                                                                                                                |
+| --------- | -------- | -------- | -------------------------------------------------------------------------------------------------------------------------- |
+| language  | string   | `'html'` | The highlight language in use                                                                                              |
+| render    | function |          | Outputs the HTML to display (see below)                                                                                    |
+| stringify | function | (1)      | Receives the story output (in `@storybook/html` it might be a string or a DOM element) and returning its source as string. |
+| transform | function | (2)      | Receives the story output and returning it after an arbitrary transformation.                                              |
 
-The highlight language in use. Defaults to `html`.
+1. This function is already defined in the `html` renderer but can be overridden if needed.
 
-#### `render(story: any, parameters: object): string`
+### The `render` function
 
-A function receiving the story output and a parameters object. Parameter object contains the `transform` and `stringify` functions and the `language` string.
+The render function has the following signature:
 
-#### `stringify(node: any): string` (optional)
+```ts
+render(storyOutput: unknown, parameters: object): string
+```
 
-A function receiving the story output (in `@storybook/html` it might be a string or a DOM element) and returning its source as string.
-
-**Note**: This function is already defined in the `html` renderer but can be overridden if needed.
-
-#### `transform(node: any): any` (optional)
-
-A function receiving the story output and returning it after an arbitrary transformation.
+It receives the story output and a parameters object. Parameter object contains the `transform` and `stringify` functions and the `language` string.
 
 ### Default configuration
 
-Both the `custom` and the `hmtl` renderer accept the same `source` parameters. Passed-in values will be used as defaults.
+Both the `custom` and the `html` renderer accept the same `source` parameters. Passed-in values will be used as defaults.
 
 ## Contributing
 

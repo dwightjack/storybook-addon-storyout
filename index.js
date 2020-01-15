@@ -1,3 +1,8 @@
-module.exports.withSource = require('./dist/decorator.ts.js').withSource;
-module.exports.html = require('./dist/frameworks.ts.js').html;
-module.exports.custom = require('./dist/frameworks.ts.js').custom;
+const { withSource } = require('./dist/decorator.ts.js');
+const { html, custom } = require('./dist/frameworks.ts.js');
+
+module.exports = {
+  html,
+  custom,
+  withSource,
+};

@@ -1,19 +1,20 @@
-export type fn = (...args: any) => any;
+export type fn = (...args: unknown[]) => unknown;
 export type transformFn = <T>(input: T) => T;
-export type stringifyFn = (input: any, ...args: any[]) => string;
+export type stringifyFn = (input: unknown, ...args: unknown[]) => string;
 export type renderFn = (
-  input: any,
+  output: unknown,
   parameters?: Pick<Parameters, 'transform' | 'stringify' | 'language'>,
 ) => string;
 
 export interface Parameters {
   transform?: transformFn;
   stringify?: stringifyFn;
-  render?: renderFn;
+  render?: renderFn | false;
   language?: string;
-  [key: string]: any;
+  [key: string]: unknown;
 }
 
-export interface DecoratorParams {
-  parameters: Parameters | false;
+export interface SourceUpdateEvent {
+  source: string;
+  language: string;
 }

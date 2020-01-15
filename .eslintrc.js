@@ -1,16 +1,19 @@
 module.exports = {
   root: true,
-  extends: ['eslint:recommended', 'plugin:node/recommended', 'prettier'],
+  extends: [
+    'eslint:recommended',
+    'plugin:node/recommended',
+    'plugin:prettier/recommended',
+  ],
   env: {
     node: true,
-  },
-  plugins: ['node', 'prettier'],
-  parserOptions: {
-    ecmaVersion: 2018,
   },
   rules: {
     'no-console': 0,
     'node/no-unpublished-require': 0,
-    'prettier/prettier': ['error'],
+    'no-shadow': 'warn',
+    'block-scoped-var': 'error',
+    'consistent-return': 'error',
+    eqeqeq: 'error',
   },
 };

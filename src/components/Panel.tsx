@@ -1,26 +1,33 @@
 import * as React from 'react';
 import { useState, useEffect } from 'react';
 import { Placeholder, SyntaxHighlighter } from '@storybook/components';
+import { API } from '@storybook/api';
 import { ClassNames } from '@storybook/theming';
 import { UPDATE_SOURCE } from '../constants';
 import { format } from '../utils';
+import { SourceUpdateEvent } from '../types';
 
 export interface PanelProp {
-  api: any;
+  api: API;
   active: boolean;
 }
 
 export function Panel({
   api,
   active,
-}): React.FunctionComponentElement<PanelProp> {
-  const { parameters = {} } = api.getCurrentStoryData() || {};
+}: PanelProp): React.FunctionComponentElement<PanelProp> | null {
+  const data = api.getCurrentStoryData();
+  let parameters: Record<string, unknown> = {};
+
+  if ('parameters' in data) {
+    parameters = data.parameters;
+  }
 
   const [code, setCode] = useState('');
   const [language, setLanguage] = useState('');
 
   useEffect(() => {
-    function onUpdate({ source, language }): void {
+    function onUpdate({ source, language }: SourceUpdateEvent): void {
       setLanguage(language);
       if (!source) {
         setCode('');
@@ -30,7 +37,7 @@ export function Panel({
     }
 
     api.on(UPDATE_SOURCE, onUpdate);
-    return () => {
+    return (): void => {
       api.off(UPDATE_SOURCE, onUpdate);
     };
   }, [parameters.source]);
@@ -45,7 +52,7 @@ export function Panel({
 
   return (
     <ClassNames>
-      {({ css }) => (
+      {({ css }): React.ReactElement => (
         <SyntaxHighlighter
           language={language}
           bordered
