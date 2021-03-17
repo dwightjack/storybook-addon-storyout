@@ -24,7 +24,6 @@
     "prepublishOnly": "run-s release"
   },
   "dependencies": {
-
     "@storybook/addons": "^5.3.3",
     "@storybook/components": "^5.3.3",
     "@storybook/theming": "^5.3.3",
@@ -62,5 +61,10 @@
     "transform": {
       "^.+\\.tsx?$": "ts-jest"
     }
-  }
+  },
+  "keywords": [
+    "storybook-addon",
+    "code"
+  ],
+  "description": "Storybook Addon StoryOut adds a tab panel that lets you visualize and copy the output of a story."
 }
